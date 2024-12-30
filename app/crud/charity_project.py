@@ -17,12 +17,11 @@ class CharityProjectCRUD(CRUDBase):
             select(
                 CharityProject.name,
                 CharityProject.description,
-                (
-                        func.julianday(CharityProject.close_date) -
-                        func.julianday(CharityProject.create_date)
-                ).label('duration_days')
+                (func.julianday(CharityProject.close_date) -
+                 func.julianday(CharityProject.create_date)
+                 ).label('duration_days')
             ).where(
-                CharityProject.fully_invested == True
+                CharityProject.fully_invested
             ).order_by(
                 func.julianday(CharityProject.close_date) -
                 func.julianday(CharityProject.create_date)
