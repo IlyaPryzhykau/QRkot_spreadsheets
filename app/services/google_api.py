@@ -4,7 +4,12 @@ from aiogoogle import Aiogoogle
 from app.core.config import settings
 
 
+DEFAULT_ROW_COUNT = 100
+DEFAULT_COLUMN_COUNT = 11
+DEFAULT_SHEET_ID = 0
+DEFAULT_SHEET_TITLE = 'Лист1'
 FORMAT = "%Y/%m/%d %H:%M:%S"
+LOCALE_RU = 'ru_RU'
 
 
 async def spreadsheets_create(wrapper_services: Aiogoogle) -> str:
@@ -12,19 +17,19 @@ async def spreadsheets_create(wrapper_services: Aiogoogle) -> str:
     service = await wrapper_services.discover('sheets', 'v4')
     spreadsheet_body = {
         'properties': {'title': f'Отчёт от {now_date_time}',
-                       'locale': 'ru_RU'},
+                       'locale': LOCALE_RU},
         'sheets': [{'properties': {'sheetType': 'GRID',
-                                   'sheetId': 0,
-                                   'title': 'Лист1',
-                                   'gridProperties': {'rowCount': 100,
-                                                      'columnCount': 11}}}]
+                                   'sheetId': DEFAULT_SHEET_ID,
+                                   'title': DEFAULT_SHEET_TITLE,
+                                   'gridProperties':
+                                       {'rowCount': DEFAULT_ROW_COUNT,
+                                        'columnCount': DEFAULT_COLUMN_COUNT}}}]
     }
 
     response = await wrapper_services.as_service_account(
         service.spreadsheets.create(json=spreadsheet_body)
     )
-    spreadsheetid = response['spreadsheetId']
-    return spreadsheetid
+    return response['spreadsheetId']
 
 
 async def set_user_permissions(
@@ -39,7 +44,7 @@ async def set_user_permissions(
         service.permissions.create(
             fileId=spreadsheetid,
             json=permissions_body,
-            fields="id"
+            fields='id'
         ))
 
 

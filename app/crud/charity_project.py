@@ -17,9 +17,11 @@ class CharityProjectCRUD(CRUDBase):
             select(
                 CharityProject.name,
                 CharityProject.description,
-                (func.julianday(CharityProject.close_date) -
-                 func.julianday(CharityProject.create_date)
-                 ).label('duration_days')
+                func.round(
+                    func.julianday(CharityProject.close_date) -
+                    func.julianday(CharityProject.create_date),
+                    2
+                ).label('duration_days')
             ).where(
                 CharityProject.fully_invested
             ).order_by(
@@ -34,7 +36,7 @@ class CharityProjectCRUD(CRUDBase):
             {
                 'name': project.name,
                 'description': project.description,
-                'duration_days': round(project.duration_days, 2)
+                'duration_days': project.duration_days
             }
             for project in projects
         ]
